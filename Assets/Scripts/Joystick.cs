@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler, IInputSource
 {
 	[SerializeField] private float _radius;
 	[SerializeField] private RectTransform _handle;
 
 	private bool _canDrag;
+
+	public Vector2 MovementDelta => (_handle.position - transform.position) / _radius;
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
