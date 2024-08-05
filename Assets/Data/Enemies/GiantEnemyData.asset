@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 2.5
   Health: 15
+  DamageRadius: 1.5

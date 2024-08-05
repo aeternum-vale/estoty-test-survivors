@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Gameplay;
 using ScriptableObjects;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemiesManager : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class EnemiesManager : MonoBehaviour
 	private float _spawnElapsedTime;
 
 	private Queue<Enemy> _inactiveInstances = new Queue<Enemy>();
+
+	public event EventHandler<float> CausedDamageBySomeEnemy;
 
 	private void Start()
 	{
@@ -46,9 +50,26 @@ public class EnemiesManager : MonoBehaviour
 
 		enemyInstance.transform.position = _player.position + new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), 0).normalized * _spawnRadius;
 		enemyInstance.Target = _player;
-		enemyInstance.Died += OnEnemyDied;
+		AddListenersToEnemy(enemyInstance);
 
 		return enemyInstance;
+	}
+
+	private void AddListenersToEnemy(Enemy enemy)
+	{
+		enemy.Died += OnEnemyDied;
+		enemy.CausedDamageToTarget += OnCausedDamageToTarget;
+	}
+
+	private void RemoveListenersFromEnemy(Enemy enemy)
+	{
+		enemy.Died -= OnEnemyDied;
+		enemy.CausedDamageToTarget -= OnCausedDamageToTarget;
+	}
+
+	private void OnCausedDamageToTarget(object sender, float damage)
+	{
+		CausedDamageBySomeEnemy?.Invoke(this, damage);
 	}
 
 	private void OnEnemyDied(object sender, System.EventArgs args)
@@ -58,15 +79,15 @@ public class EnemiesManager : MonoBehaviour
 
 	private void DeactivateEnemy(Enemy e)
 	{
-		e.Died -= OnEnemyDied;
+		RemoveListenersFromEnemy(e);
 		e.gameObject.SetActive(false);
 		_inactiveInstances.Enqueue(e);
 	}
 
-	public Enemy GetEnemyClosestToPlayer()
+	public void GetEnemyClosestToPlayer(out Enemy closest, out float distance)
 	{
 		float minSqrMagnitude = float.MaxValue;
-		Enemy closest = null;
+		closest = null;
 
 		foreach (var e in _enemyInstances)
 		{
@@ -80,7 +101,7 @@ public class EnemiesManager : MonoBehaviour
 			}
 		}
 
-		return closest;
+		distance = Mathf.Sqrt(minSqrMagnitude);
 	}
 
 	private void Update()

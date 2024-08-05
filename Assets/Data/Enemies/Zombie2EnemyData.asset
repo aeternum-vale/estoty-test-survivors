@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: Zombie2EnemyData
   m_EditorClassIdentifier: 
   Speed: 3
+  Health: 5
+  DamageRadius: 1
