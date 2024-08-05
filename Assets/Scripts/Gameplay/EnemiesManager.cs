@@ -7,19 +7,17 @@ using Random = UnityEngine.Random;
 
 public class EnemiesManager : MonoBehaviour
 {
+	public event EventHandler<float> CausedDamageToTarget;
 
 	[SerializeField] private EnemyManagerScriptableObject _data;
-	[SerializeField] private Transform _player;
+	[SerializeField] private Transform _target;
 	[SerializeField] private Enemy[] _enemyPrefabs;
 	[SerializeField] private Transform _enemiesParent;
 	[SerializeField] private float _spawnRadius;
 
-	private List<Enemy> _enemyInstances = new List<Enemy>();
+	private readonly List<Enemy> _enemyInstances = new List<Enemy>();
+	private readonly Queue<Enemy> _inactiveInstances = new Queue<Enemy>();
 	private float _spawnElapsedTime;
-
-	private Queue<Enemy> _inactiveInstances = new Queue<Enemy>();
-
-	public event EventHandler<float> CausedDamageBySomeEnemy;
 
 	private void Start()
 	{
@@ -48,8 +46,8 @@ public class EnemiesManager : MonoBehaviour
 			_enemyInstances.Add(enemyInstance);
 		}
 
-		enemyInstance.transform.position = _player.position + new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), 0).normalized * _spawnRadius;
-		enemyInstance.Target = _player;
+		enemyInstance.transform.position = _target.position + new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), 0).normalized * _spawnRadius;
+		enemyInstance.Target = _target;
 		AddListenersToEnemy(enemyInstance);
 
 		return enemyInstance;
@@ -69,7 +67,7 @@ public class EnemiesManager : MonoBehaviour
 
 	private void OnCausedDamageToTarget(object sender, float damage)
 	{
-		CausedDamageBySomeEnemy?.Invoke(this, damage);
+		CausedDamageToTarget?.Invoke(this, damage);
 	}
 
 	private void OnEnemyDied(object sender, System.EventArgs args)
@@ -93,7 +91,7 @@ public class EnemiesManager : MonoBehaviour
 		{
 			if (!e.gameObject.activeSelf || e.IsDead) continue;
 
-			var sqrMagnitude = Vector3.SqrMagnitude(e.transform.position - _player.position);
+			var sqrMagnitude = Vector3.SqrMagnitude(e.transform.position - _target.position);
 			if (sqrMagnitude < minSqrMagnitude)
 			{
 				minSqrMagnitude = sqrMagnitude;
@@ -117,6 +115,6 @@ public class EnemiesManager : MonoBehaviour
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.yellow;
-		Gizmos.DrawWireSphere(transform.position, _spawnRadius);
+		Gizmos.DrawWireSphere(_target.position, _spawnRadius);
 	}
 }

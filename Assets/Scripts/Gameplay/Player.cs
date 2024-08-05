@@ -8,6 +8,7 @@ namespace Gameplay
 	{
 		public IInputSource InputSource { get; set; }
 		public event EventHandler Died;
+		public event EventHandler<float> NormalizedHealthChanged;
 
 		[SerializeField] private PlayerScriptableObject _data;
 		[SerializeField] private EnemiesManager _enemiesManager;
@@ -16,11 +17,14 @@ namespace Gameplay
 
 		private float _health;
 
+
 		private void Start()
 		{
 			_health = _data.Health;
 
-			_enemiesManager.CausedDamageBySomeEnemy += OnDamageMade;
+			_enemiesManager.CausedDamageToTarget += OnDamageMade;
+
+			NormalizedHealthChanged(this, 1f);
 		}
 
 		private void OnDamageMade(object sender, float d)
@@ -31,6 +35,11 @@ namespace Gameplay
 			if (_health <= 0)
 			{
 				Died?.Invoke(this, EventArgs.Empty);
+				NormalizedHealthChanged(this, 0f);
+			}
+			else
+			{
+				NormalizedHealthChanged(this, _health / _data.Health);
 			}
 		}
 
