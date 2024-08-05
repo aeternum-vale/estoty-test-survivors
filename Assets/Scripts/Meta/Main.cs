@@ -1,6 +1,7 @@
 using UnityEngine;
 using UI;
 using Gameplay;
+using Gameplay.PlayerModule;
 
 namespace Meta
 {

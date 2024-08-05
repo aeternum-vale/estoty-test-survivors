@@ -1,3 +1,4 @@
+using Gameplay.PlayerModule;
 using UnityEngine;
 
 namespace Gameplay
@@ -16,11 +17,17 @@ namespace Gameplay
 		private void AddListeners()
 		{
 			_player.NormalizedHealthChanged += OnNormalizedHealthChanged;
+			_player.NormalizedExperienceChanged += OnNormalizedExperienceChanged;
 		}
 
-		private void OnNormalizedHealthChanged(object sender, float normalizedHealth)
+		private void OnNormalizedExperienceChanged(object sender, float e)
 		{
-			View.SetNormalizedHealth(normalizedHealth);
+			View.SetNormalizedExperience(e);
+		}
+
+		private void OnNormalizedHealthChanged(object sender, float n)
+		{
+			View.SetNormalizedHealth(n);
 		}
 	}
 }

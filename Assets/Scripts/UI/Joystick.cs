@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Gameplay;
+using Gameplay.PlayerModule;
 
 namespace UI
 {
