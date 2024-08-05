@@ -3,11 +3,10 @@ using UnityEngine;
 namespace ScriptableObjects
 {
 
-	[CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObjects/Player")]
+	[CreateAssetMenu(fileName = "PlayerData", menuName = "ScriptableObjects/Player/Player")]
 	public class PlayerScriptableObject : ScriptableObject
 	{
 		public float Speed;
-		public float ShootingFrequencySec;
-		public float BulletSpeed;
+		public float Health;
 	}
 }
