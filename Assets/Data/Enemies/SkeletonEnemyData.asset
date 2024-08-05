@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3c90fc3be9c49b42b7c82042a00709b, type: 3}
   m_Name: SkeletonEnemyData
   m_EditorClassIdentifier: 
-  Speed: 4
+  Speed: 4.5
+  Health: 2

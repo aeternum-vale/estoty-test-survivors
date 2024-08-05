@@ -13,3 +13,4 @@ MonoBehaviour:
   m_Name: GiantEnemyData
   m_EditorClassIdentifier: 
   Speed: 2.5
+  Health: 15

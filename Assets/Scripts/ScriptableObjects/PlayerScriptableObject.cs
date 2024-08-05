@@ -7,5 +7,7 @@ namespace ScriptableObjects
 	public class PlayerScriptableObject : ScriptableObject
 	{
 		public float Speed;
+		public float ShootingFrequencySec;
+		public float BulletSpeed;
 	}
 }

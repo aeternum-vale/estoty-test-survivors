@@ -13,3 +13,5 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   Speed: 6
+  ShootingFrequencySec: 0.2
+  BulletSpeed: 10
