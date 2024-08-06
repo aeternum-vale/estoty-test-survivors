@@ -1,3 +1,5 @@
+using System;
+using Gameplay.Enemies;
 using Gameplay.PlayerModule;
 using UnityEngine;
 
@@ -8,6 +10,8 @@ namespace Gameplay
 		public IView View { get; set; }
 
 		[SerializeField] private Player _player;
+		[SerializeField] private EnemiesManager _enemiesManager;
+		[SerializeField] private Gun _gun;
 
 		private void Awake()
 		{
@@ -18,6 +22,24 @@ namespace Gameplay
 		{
 			_player.NormalizedHealthChanged += OnNormalizedHealthChanged;
 			_player.NormalizedExperienceChanged += OnNormalizedExperienceChanged;
+			_player.LevelChanged += OnLevelChanged;
+			_enemiesManager.KillsCountChanged += OnKillsCountChanged;
+			_gun.AmmoAmountChanged += OnAmmoAmountChanged;
+		}
+
+		private void OnAmmoAmountChanged(object sender, int a)
+		{
+			View.SetAmmoAmount(a);
+		}
+
+		private void OnKillsCountChanged(object sender, int k)
+		{
+			View.SetKillsCount(k);
+		}
+
+		private void OnLevelChanged(object sender, int l)
+		{
+			View.SetLevel(l);
 		}
 
 		private void OnNormalizedExperienceChanged(object sender, float e)

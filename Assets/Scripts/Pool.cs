@@ -12,10 +12,10 @@ public class Pool<T> : MonoBehaviour where T : MonoBehaviour, IPoolable
 	protected readonly List<T> _instances = new List<T>();
 	private readonly Queue<T> _inactiveInstances = new Queue<T>();
 
-	public virtual T Spawn(Func<T> instantiate)
+	public virtual T Spawn(Func<T> instantiate, bool forceInstantiate = false)
 	{
 		T instance;
-		if (_inactiveInstances.Count > 0)
+		if (_inactiveInstances.Count > 0 && !forceInstantiate)
 		{
 			instance = _inactiveInstances.Dequeue();
 			instance.Reinitialize();

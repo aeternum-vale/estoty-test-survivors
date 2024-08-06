@@ -12,4 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c490f2ec541fe143919840b68f824f0, type: 3}
   m_Name: EnemiesGeneralData
   m_EditorClassIdentifier: 
-  SpawnFrequencySec: 0.5
+  InitialSpawnIntervalSec: 2
+  SpawnIntervalDecreaseIntervalSec: 6
+  SpawnIntervalDecreaseAmountSec: 0.1
+  MinSpawnIntervalSec: 0.01

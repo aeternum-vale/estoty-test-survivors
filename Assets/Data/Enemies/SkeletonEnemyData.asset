@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: SkeletonEnemyData
   m_EditorClassIdentifier: 
   Speed: 4.5
-  Health: 2
+  Health: 1
   DamageRadius: 1

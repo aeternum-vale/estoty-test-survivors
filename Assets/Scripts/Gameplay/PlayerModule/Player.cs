@@ -13,6 +13,7 @@ namespace Gameplay.PlayerModule
 		public event EventHandler Died;
 		public event EventHandler<float> NormalizedHealthChanged;
 		public event EventHandler<float> NormalizedExperienceChanged;
+		public event EventHandler<int> LevelChanged;
 
 		[SerializeField] private PlayerScriptableObject _data;
 		[SerializeField] private EnemiesManager _enemiesManager;
@@ -39,19 +40,40 @@ namespace Gameplay.PlayerModule
 			set
 			{
 				var old = _experience;
-				_experience = Math.Clamp(value, 0, _data.ExperienceAmountOfOneLevel);
+				_experience = value;
+
+				if (_experience >= _data.ExperienceAmountOfOneLevel)
+				{
+					Level++;
+					_gun.DecreaseShootingInterval();
+					_experience %= _data.ExperienceAmountOfOneLevel;
+				}
+
 				if (old != _experience)
 					NormalizedExperienceChanged?.Invoke(this, _experience / _data.ExperienceAmountOfOneLevel);
 			}
 		}
 
-		private float _ammo;
+		
+		private int _level;
+		private int Level
+		{
+			get => _level; 
+			set
+			{
+				if (_level != value)
+				{
+					_level = value;
+					LevelChanged?.Invoke(this, _level);
+				}
+			}
+		}
 
 		private void Start()
 		{
 			Health = _data.TotalHealth;
 			Experience = 0f;
-			_ammo = _data.TotalAmmo;
+			Level = 0;
 
 			_enemiesManager.CausedDamageToTarget += OnDamageMade;
 		}
@@ -90,7 +112,7 @@ namespace Gameplay.PlayerModule
 						Health += prop.gameObject.GetComponent<HealthProp>().HealthValue;
 						break;
 					case PropType.Ammo:
-						_ammo += prop.gameObject.GetComponent<AmmoProp>().AmmoValue;
+						_gun.Ammo += prop.gameObject.GetComponent<AmmoProp>().AmmoValue;
 						break;
 					default:
 						throw new Exception("Invalid prop type");

@@ -6,6 +6,6 @@ namespace Gameplay.Props
 	public class AmmoProp : MonoBehaviour
 	{
 		[SerializeField] private AmmoPropsScriptableObject _data;
-		public float AmmoValue => _data.AmmoValue;
+		public int AmmoValue => _data.AmmoValue;
 	}
 }

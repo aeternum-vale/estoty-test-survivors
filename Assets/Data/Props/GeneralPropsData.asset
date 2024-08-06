@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee28921d2637c894db212956395e1214, type: 3}
   m_Name: GeneralPropsData
   m_EditorClassIdentifier: 
-  AttractionSpeed: 1
+  AttractionSpeed: 8
   AttractionRadius: 3

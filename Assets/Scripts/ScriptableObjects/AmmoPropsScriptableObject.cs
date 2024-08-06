@@ -5,6 +5,6 @@ namespace ScriptableObjects
 	[CreateAssetMenu(fileName = "AmmoData", menuName = "ScriptableObjects/Props/Ammo")]
 	public class AmmoPropsScriptableObject : ScriptableObject
 	{
-		public float AmmoValue;
+		public int AmmoValue;
 	}
 }

@@ -9,6 +9,7 @@ namespace Gameplay.Enemies
 	public class EnemiesManager : Pool<Enemy>
 	{
 		public event EventHandler<float> CausedDamageToTarget;
+		public event EventHandler<int> KillsCountChanged;
 
 		[SerializeField] private EnemyManagerScriptableObject _data;
 		[SerializeField] private PropsManager _propsManager;
@@ -18,24 +19,27 @@ namespace Gameplay.Enemies
 		[SerializeField] private float _spawnRadius;
 		[SerializeField] private float _maxDropDist = 1f;
 
-
+		private float _currentSpawnInterval;
 		private float _spawnElapsedTime;
+		private float _spawnDecreaseElapsedTime;
+		private int _killsCount;
+
+		private void Awake()
+		{
+			_currentSpawnInterval = _data.InitialSpawnIntervalSec;
+		}
 
 		private void Start()
 		{
 			foreach (var p in _enemyPrefabs)
-			{
-				// var enemyInstance = Instantiate(p, _enemiesParent);
-				// _enemyInstances.Add(enemyInstance);
-				// DeactivateEnemy(enemyInstance, false);
-			}
+				Despawn(Spawn(() => Instantiate(p, _enemiesParent), true));
 		}
 
 		private Enemy SpawnEnemy()
 		{
 			Enemy enemyInstance = Spawn(CreateRandomEnemy);
 
-			enemyInstance.transform.position = _target.position + new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), 0).normalized * _spawnRadius;
+			enemyInstance.transform.position = _target.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized * _spawnRadius;
 			enemyInstance.Target = _target;
 			AddListenersToEnemy(enemyInstance);
 
@@ -62,6 +66,8 @@ namespace Gameplay.Enemies
 		private void OnEnemyDied(object sender, EventArgs args)
 		{
 			DeactivateEnemy((Enemy)sender);
+			_killsCount++;
+			KillsCountChanged?.Invoke(this, _killsCount);
 		}
 
 		private void DeactivateEnemy(Enemy e, bool dropProps = true)
@@ -76,7 +82,7 @@ namespace Gameplay.Enemies
 
 			ep.transform.position = e.transform.position;
 			rp.transform.position = e.transform.position;
-			
+
 			ep.transform.position += new Vector3(Random.Range(0, _maxDropDist), Random.Range(0, _maxDropDist), 0f);
 			rp.transform.position += new Vector3(Random.Range(0, _maxDropDist), Random.Range(0, _maxDropDist), 0f);
 		}
@@ -103,12 +109,26 @@ namespace Gameplay.Enemies
 
 		private void Update()
 		{
+			UpdateSpawnInterval();
+
 			_spawnElapsedTime += Time.deltaTime;
-			if (_spawnElapsedTime >= _data.SpawnFrequencySec)
+			if (_spawnElapsedTime >= _currentSpawnInterval)
 			{
 				_spawnElapsedTime = 0f;
 				SpawnEnemy();
 			}
+		}
+
+		private void UpdateSpawnInterval()
+		{
+			_spawnDecreaseElapsedTime += Time.deltaTime;
+			if (_spawnDecreaseElapsedTime >= _data.SpawnIntervalDecreaseIntervalSec)
+			{
+				_spawnDecreaseElapsedTime = 0f;
+				_currentSpawnInterval -= _data.SpawnIntervalDecreaseAmountSec;
+			}
+			_currentSpawnInterval = _currentSpawnInterval < _data.MinSpawnIntervalSec ?
+				 _data.MinSpawnIntervalSec : _currentSpawnInterval;
 		}
 
 		private void OnDrawGizmos()

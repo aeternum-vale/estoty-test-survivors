@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Speed: 6
   TotalHealth: 100
-  TotalAmmo: 10
+  InitialAmmo: 10
   ExperienceAmountOfOneLevel: 100

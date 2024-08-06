@@ -8,7 +8,6 @@ namespace ScriptableObjects
 	{
 		public float Speed;
 		public float TotalHealth;
-		public float TotalAmmo;
 		public float ExperienceAmountOfOneLevel;
 	}
 }
