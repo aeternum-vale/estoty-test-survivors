@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: PlayerData
   m_EditorClassIdentifier: 
   Speed: 6
-  Health: 100
-  Ammo: 30
+  TotalHealth: 100
+  TotalAmmo: 10
   ExperienceAmountOfOneLevel: 100

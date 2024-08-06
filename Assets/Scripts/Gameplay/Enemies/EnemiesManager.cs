@@ -1,55 +1,39 @@
 using System;
-using System.Collections.Generic;
-using Gameplay;
+using Gameplay.Props;
 using ScriptableObjects;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Gameplay.Enemies
 {
-
-
-
-	public class EnemiesManager : MonoBehaviour
+	public class EnemiesManager : Pool<Enemy>
 	{
 		public event EventHandler<float> CausedDamageToTarget;
 
 		[SerializeField] private EnemyManagerScriptableObject _data;
+		[SerializeField] private PropsManager _propsManager;
 		[SerializeField] private Transform _target;
 		[SerializeField] private Enemy[] _enemyPrefabs;
 		[SerializeField] private Transform _enemiesParent;
 		[SerializeField] private float _spawnRadius;
+		[SerializeField] private float _maxDropDist = 1f;
 
-		private readonly List<Enemy> _enemyInstances = new List<Enemy>();
-		private readonly Queue<Enemy> _inactiveInstances = new Queue<Enemy>();
+
 		private float _spawnElapsedTime;
 
 		private void Start()
 		{
 			foreach (var p in _enemyPrefabs)
 			{
-				var enemyInstance = Instantiate(p, _enemiesParent);
-				_enemyInstances.Add(enemyInstance);
-				DeactivateEnemy(enemyInstance);
+				// var enemyInstance = Instantiate(p, _enemiesParent);
+				// _enemyInstances.Add(enemyInstance);
+				// DeactivateEnemy(enemyInstance, false);
 			}
 		}
 
 		private Enemy SpawnEnemy()
 		{
-			Enemy enemyInstance;
-
-			if (_inactiveInstances.Count > 0)
-			{
-				enemyInstance = _inactiveInstances.Dequeue();
-				enemyInstance.Reinitialize();
-				enemyInstance.gameObject.SetActive(true);
-			}
-			else
-			{
-				var prefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)];
-				enemyInstance = Instantiate(prefab, _enemiesParent);
-				_enemyInstances.Add(enemyInstance);
-			}
+			Enemy enemyInstance = Spawn(CreateRandomEnemy);
 
 			enemyInstance.transform.position = _target.position + new Vector3(Random.Range(0f, 1f), Random.Range(0f, 1f), 0).normalized * _spawnRadius;
 			enemyInstance.Target = _target;
@@ -75,16 +59,26 @@ namespace Gameplay.Enemies
 			CausedDamageToTarget?.Invoke(this, damage);
 		}
 
-		private void OnEnemyDied(object sender, System.EventArgs args)
+		private void OnEnemyDied(object sender, EventArgs args)
 		{
 			DeactivateEnemy((Enemy)sender);
 		}
 
-		private void DeactivateEnemy(Enemy e)
+		private void DeactivateEnemy(Enemy e, bool dropProps = true)
 		{
 			RemoveListenersFromEnemy(e);
-			e.gameObject.SetActive(false);
-			_inactiveInstances.Enqueue(e);
+			Despawn(e);
+
+			if (!dropProps) return;
+
+			var ep = _propsManager.CreateProp(PropType.Experience);
+			var rp = _propsManager.CreateRandomProp();
+
+			ep.transform.position = e.transform.position;
+			rp.transform.position = e.transform.position;
+			
+			ep.transform.position += new Vector3(Random.Range(0, _maxDropDist), Random.Range(0, _maxDropDist), 0f);
+			rp.transform.position += new Vector3(Random.Range(0, _maxDropDist), Random.Range(0, _maxDropDist), 0f);
 		}
 
 		public void GetEnemyClosestToPlayer(out Enemy closest, out float distance)
@@ -92,7 +86,7 @@ namespace Gameplay.Enemies
 			float minSqrMagnitude = float.MaxValue;
 			closest = null;
 
-			foreach (var e in _enemyInstances)
+			foreach (var e in _instances)
 			{
 				if (!e.gameObject.activeSelf || e.IsDead) continue;
 
@@ -121,6 +115,12 @@ namespace Gameplay.Enemies
 		{
 			Gizmos.color = Color.yellow;
 			Gizmos.DrawWireSphere(_target.position, _spawnRadius);
+		}
+
+		private Enemy CreateRandomEnemy()
+		{
+			var prefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)];
+			return Instantiate(prefab, _enemiesParent);
 		}
 	}
 }

@@ -9,6 +9,7 @@ namespace Gameplay.PlayerModule
 	public class Player : MonoBehaviour
 	{
 		public IInputSource InputSource { get; set; }
+
 		public event EventHandler Died;
 		public event EventHandler<float> NormalizedHealthChanged;
 		public event EventHandler<float> NormalizedExperienceChanged;
@@ -16,32 +17,49 @@ namespace Gameplay.PlayerModule
 		[SerializeField] private PlayerScriptableObject _data;
 		[SerializeField] private EnemiesManager _enemiesManager;
 		[SerializeField] private Gun _gun;
-		[SerializeField] private float _damageRadius;
+		[SerializeField] private float _shootingRadius;
 
 		private float _health;
-		private float _ammo;
+		private float Health
+		{
+			get => _health;
+			set
+			{
+				var old = _health;
+				_health = Math.Clamp(value, 0, _data.TotalHealth);
+				if (old != _health)
+					NormalizedHealthChanged?.Invoke(this, _health / _data.TotalHealth);
+			}
+		}
+
 		private float _experience;
+		public float Experience
+		{
+			get => _experience;
+			set
+			{
+				var old = _experience;
+				_experience = Math.Clamp(value, 0, _data.ExperienceAmountOfOneLevel);
+				if (old != _experience)
+					NormalizedExperienceChanged?.Invoke(this, _experience / _data.ExperienceAmountOfOneLevel);
+			}
+		}
+
+		private float _ammo;
 
 		private void Start()
 		{
-			_health = _data.Health;
-			_ammo = _data.Ammo;
-			_experience = 0f;
+			Health = _data.TotalHealth;
+			Experience = 0f;
+			_ammo = _data.TotalAmmo;
 
 			_enemiesManager.CausedDamageToTarget += OnDamageMade;
-
-			NormalizedHealthChanged(this, 1f);
-			NormalizedExperienceChanged(this, 0f);
 		}
 
 		private void OnDamageMade(object sender, float d)
 		{
-			_health -= d;
-			_health = _health < 0 ? 0 : _health;
-
-			NormalizedHealthChanged(this, _health / _data.Health);
-
-			if (_health == 0)
+			Health -= d;
+			if (Health == 0)
 				Died?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -50,13 +68,9 @@ namespace Gameplay.PlayerModule
 			transform.position += _data.Speed * Time.deltaTime * (Vector3)InputSource.MovementDelta;
 
 			_enemiesManager.GetEnemyClosestToPlayer(out var closestEnemy, out var distance);
-			_gun.ClosestEnemy = (closestEnemy != null) ? closestEnemy.transform : null;
-		}
 
-		private void OnDrawGizmos()
-		{
-			Gizmos.color = Color.red;
-			Gizmos.DrawWireSphere(transform.position, _damageRadius);
+			bool hasTarget = (closestEnemy != null) && (distance <= _shootingRadius);
+			_gun.ClosestEnemy = hasTarget ? closestEnemy.transform : null;
 		}
 
 		private void OnTriggerEnter2D(Collider2D col)
@@ -70,12 +84,10 @@ namespace Gameplay.PlayerModule
 				switch (prop.Type)
 				{
 					case PropType.Experience:
-						_experience += prop.gameObject.GetComponent<ExperienceProp>().ExperienceValue;
-						NormalizedExperienceChanged?.Invoke(this, _experience / _data.ExperienceAmountOfOneLevel);
+						Experience += prop.gameObject.GetComponent<ExperienceProp>().ExperienceValue;
 						break;
 					case PropType.Health:
-						_health += prop.gameObject.GetComponent<HealthProp>().HealthValue;
-						NormalizedHealthChanged(this, _health / _data.Health);
+						Health += prop.gameObject.GetComponent<HealthProp>().HealthValue;
 						break;
 					case PropType.Ammo:
 						_ammo += prop.gameObject.GetComponent<AmmoProp>().AmmoValue;
@@ -84,6 +96,12 @@ namespace Gameplay.PlayerModule
 						throw new Exception("Invalid prop type");
 				}
 			}
+		}
+
+		private void OnDrawGizmos()
+		{
+			Gizmos.color = Color.red;
+			Gizmos.DrawWireSphere(transform.position, _shootingRadius);
 		}
 	}
 }

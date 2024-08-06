@@ -1,12 +1,15 @@
+using System;
 using Gameplay.Enemies;
 using UnityEngine;
 
 namespace Gameplay.PlayerModule
 {
-	public class Bullet : MonoBehaviour
+	public class Bullet : MonoBehaviour, IPoolable
 	{
 		public Vector2 Direction { get; set; }
 		public float Speed { get; set; }
+
+		public event EventHandler<Bullet> Completed;
 
 		private void Update()
 		{
@@ -18,13 +21,18 @@ namespace Gameplay.PlayerModule
 			if (col.transform.TryGetComponent<Enemy>(out var enemy))
 			{
 				enemy.DecreaseHealth();
-				Destroy(gameObject);
+				Completed?.Invoke(this, this);
 			}
 		}
 
 		private void OnBecameInvisible()
 		{
-			Destroy(gameObject);
+			Completed?.Invoke(this, this);
+		}
+
+		public void Reinitialize()
+		{
+			
 		}
 	}
 }

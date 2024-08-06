@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06f19059a973b154e89b0293170c336b, type: 3}
   m_Name: GunData
   m_EditorClassIdentifier: 
-  ShootingFrequencySec: 0.2
+  ShootingFrequencySec: 0.1
   BulletSpeed: 10

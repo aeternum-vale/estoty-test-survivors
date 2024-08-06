@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Gameplay.Enemies
 {
-	public class Enemy : MonoBehaviour
+	public class Enemy : MonoBehaviour, IPoolable
 	{
 		public Transform Target { get; set; }
 		public bool IsDead { get; set; }
@@ -70,9 +70,14 @@ namespace Gameplay.Enemies
 
 			if (_health <= 0)
 			{
-				IsDead = true;
-				Died?.Invoke(this, EventArgs.Empty);
+				OnDying();
 			}
+		}
+
+		private void OnDying()
+		{
+			IsDead = true;
+			Died?.Invoke(this, EventArgs.Empty);
 		}
 
 		private void OnDrawGizmos()

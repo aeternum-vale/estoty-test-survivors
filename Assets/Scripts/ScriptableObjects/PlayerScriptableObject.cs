@@ -7,8 +7,8 @@ namespace ScriptableObjects
 	public class PlayerScriptableObject : ScriptableObject
 	{
 		public float Speed;
-		public float Health;
-		public float Ammo;
+		public float TotalHealth;
+		public float TotalAmmo;
 		public float ExperienceAmountOfOneLevel;
 	}
 }
