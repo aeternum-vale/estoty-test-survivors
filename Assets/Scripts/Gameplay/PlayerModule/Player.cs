@@ -81,7 +81,7 @@ namespace Gameplay.PlayerModule
 		private void OnDamageMade(object sender, float d)
 		{
 			Health -= d;
-			if (Health == 0)
+			if (Health <= 0)
 				Died?.Invoke(this, EventArgs.Empty);
 		}
 
