@@ -27,6 +27,8 @@ namespace Gameplay.PlayerModule
 		private int Level { get => _level; set => SetLevel(value); }
 		public Gun Gun { get => _gun; set => _gun = value; }
 
+		public bool IsDead { get; set; }
+
 		[Inject]
 		private void Construct(IInputSource inputSource, EnemiesManager enemiesManager, PropsManager propsManager)
 		{
@@ -57,8 +59,11 @@ namespace Gameplay.PlayerModule
 		private void OnDamageMade(object sender, float d)
 		{
 			Health -= d;
-			if (Health <= 0)
+			if (Health <= 0 && !IsDead)
+			{
+				IsDead = true;
 				Died?.Invoke(this, EventArgs.Empty);
+			}
 		}
 
 		void Update()

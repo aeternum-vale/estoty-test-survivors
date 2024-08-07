@@ -74,9 +74,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 965c091bfba6bac49a1fb99c966707a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemiesManagerPrefab: {fileID: 7660125570880886121, guid: 0aa98b9d8c81edd4d99437ee87740a7a, type: 3}
-  _propsManagerPrefab: {fileID: 5947446130131032484, guid: 65e0de8d0f7c42143b5aa31d9fd1eb55, type: 3}
-  _playerPrefab: {fileID: 272464730889658580, guid: 47e60d7a9fea3a543a489d90eab7bd78, type: 3}
-  _joystickPrefab: {fileID: 8041765257780707607, guid: d1d9945f4e10d0a44be489f25f9ae628, type: 3}
-  _presenterPrefab: {fileID: 8613461318166926554, guid: d8f4f251d3ac3b048a0e43528b87cf6c, type: 3}
-  _uiManagerPrefab: {fileID: 1414737175368620287, guid: ae733a491d18049409b590d2894c056b, type: 3}
+  _mainPrefab: {fileID: -1974585552287490249, guid: 566e23242e27ab545831dbb2258d81e7, type: 3}

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06f19059a973b154e89b0293170c336b, type: 3}
   m_Name: GunData
   m_EditorClassIdentifier: 
-  InitialAmmo: 20
+  InitialAmmo: 50
   InitialShootingIntervalSec: 0.5
   ShootingIntervalDecreaseAmountSec: 0.01
   BulletSpeed: 10

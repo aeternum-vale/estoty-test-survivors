@@ -2,13 +2,24 @@ using System;
 using System.Collections;
 using Gameplay.PlayerModule;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using Zenject;
 
 namespace Gameplay
 {
 	public class Game : MonoBehaviour
 	{
-		[SerializeField] private Player _player;
-		[SerializeField] private GameObject _gameOverScreen;
+		public GameObject GameOverScreen { get => _gameOverScreen; set => _gameOverScreen = value; }
+
+		private Player _player;
+		private GameObject _gameOverScreen;
+
+
+		[Inject]
+		private void Construct(Player player) 
+		{
+			_player = player;
+		}
 
 		private void Awake()
 		{
@@ -24,8 +35,9 @@ namespace Gameplay
 
 		private IEnumerator FinishGame()
 		{
-			yield return new WaitForSecondsRealtime(5);
-			Debug.Log($"<b><color=lightblue>{GetType().Name}:</color></b> Finished");
+			yield return new WaitForSecondsRealtime(3);
+			Time.timeScale = 1;
+			SceneManager.LoadScene("Boot");
 		}
 	}
 }
