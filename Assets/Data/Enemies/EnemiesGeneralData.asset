@@ -16,3 +16,4 @@ MonoBehaviour:
   SpawnIntervalDecreaseIntervalSec: 6
   SpawnIntervalDecreaseAmountSec: 0.1
   MinSpawnIntervalSec: 0.01
+  SpawnRadius: 12

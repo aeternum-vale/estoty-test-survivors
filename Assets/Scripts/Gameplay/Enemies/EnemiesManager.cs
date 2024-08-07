@@ -18,9 +18,8 @@ namespace Gameplay.Enemies
 
 		[SerializeField] private EnemyManagerScriptableObject _data;
 		[SerializeField] private Enemy[] _enemyPrefabs;
-		[SerializeField] private float _spawnRadius;
 		[SerializeField] private float _maxDropDist = 1f;
-		
+
 		private Transform _target;
 		private Transform _enemiesParent;
 
@@ -51,7 +50,11 @@ namespace Gameplay.Enemies
 		{
 			Enemy enemyInstance = Spawn(CreateRandomEnemy);
 
-			enemyInstance.transform.position = _target.position + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized * _spawnRadius;
+			enemyInstance.transform.position =
+				_target.position +
+				new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0).normalized *
+				_data.SpawnRadius;
+
 			enemyInstance.Target = _target;
 			AddListenersToEnemy(enemyInstance);
 
@@ -153,7 +156,7 @@ namespace Gameplay.Enemies
 			if (_target == null) return;
 
 			Gizmos.color = Color.yellow;
-			Gizmos.DrawWireSphere(_target.position, _spawnRadius);
+			Gizmos.DrawWireSphere(_target.position, _data.SpawnRadius);
 		}
 	}
 }

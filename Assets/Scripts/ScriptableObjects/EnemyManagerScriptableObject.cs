@@ -11,5 +11,6 @@ namespace ScriptableObjects
 		public float SpawnIntervalDecreaseIntervalSec;
 		public float SpawnIntervalDecreaseAmountSec;
 		public float MinSpawnIntervalSec;
+		public float SpawnRadius;
 	}
 }
