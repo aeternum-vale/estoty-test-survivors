@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InitialAmmo: 50
   InitialShootingIntervalSec: 0.5
-  ShootingIntervalDecreaseAmountSec: 0.01
+  ShootingIntervalDecreaseAmountSec: 0.023
   BulletSpeed: 10
   MinShootingIntervalSec: 0.01
