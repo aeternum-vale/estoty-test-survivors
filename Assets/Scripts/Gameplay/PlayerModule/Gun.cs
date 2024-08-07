@@ -7,11 +7,12 @@ namespace Gameplay.PlayerModule
 	public class Gun : Pool<Bullet>
 	{
 		public event EventHandler<int> AmmoAmountChanged;
+		public Transform BulletsParent { get => _bulletsParent; set => _bulletsParent = value; }
 
 		[SerializeField] private GunScriptableObject _data;
 		[SerializeField] private Transform _bulletSource;
 		[SerializeField] private Bullet _bulletPrefab;
-		[SerializeField] private Transform _bulletsParent;
+		private Transform _bulletsParent;
 
 		public Transform ClosestEnemy { get; set; }
 
@@ -31,6 +32,7 @@ namespace Gameplay.PlayerModule
 				}
 			}
 		}
+
 
 		private void Awake()
 		{

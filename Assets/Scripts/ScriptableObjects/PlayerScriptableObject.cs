@@ -9,5 +9,6 @@ namespace ScriptableObjects
 		public float Speed;
 		public float TotalHealth;
 		public float ExperienceAmountOfOneLevel;
+		public float ShootingRadius;
 	}
 }

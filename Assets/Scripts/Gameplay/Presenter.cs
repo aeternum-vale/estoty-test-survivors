@@ -2,16 +2,25 @@ using System;
 using Gameplay.Enemies;
 using Gameplay.PlayerModule;
 using UnityEngine;
+using Zenject;
 
 namespace Gameplay
 {
 	public class Presenter : MonoBehaviour
 	{
-		public IView View { get; set; }
+		private IView _view;
+		private Player _player;
+		private EnemiesManager _enemiesManager;
+		private Gun _gun;
 
-		[SerializeField] private Player _player;
-		[SerializeField] private EnemiesManager _enemiesManager;
-		[SerializeField] private Gun _gun;
+		[Inject]
+		private void Construct(IView view, Player player, EnemiesManager enemiesManager, Gun gun)
+		{
+			_view = view;
+			_player = player;
+			_enemiesManager = enemiesManager;
+			_gun = gun;
+		}
 
 		private void Awake()
 		{
@@ -29,27 +38,27 @@ namespace Gameplay
 
 		private void OnAmmoAmountChanged(object sender, int a)
 		{
-			View.SetAmmoAmount(a);
+			_view.SetAmmoAmount(a);
 		}
 
 		private void OnKillsCountChanged(object sender, int k)
 		{
-			View.SetKillsCount(k);
+			_view.SetKillsCount(k);
 		}
 
 		private void OnLevelChanged(object sender, int l)
 		{
-			View.SetLevel(l);
+			_view.SetLevel(l);
 		}
 
 		private void OnNormalizedExperienceChanged(object sender, float e)
 		{
-			View.SetNormalizedExperience(e);
+			_view.SetNormalizedExperience(e);
 		}
 
 		private void OnNormalizedHealthChanged(object sender, float n)
 		{
-			View.SetNormalizedHealth(n);
+			_view.SetNormalizedHealth(n);
 		}
 	}
 }

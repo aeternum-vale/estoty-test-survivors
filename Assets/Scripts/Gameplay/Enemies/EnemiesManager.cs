@@ -2,6 +2,7 @@ using System;
 using Gameplay.Props;
 using ScriptableObjects;
 using UnityEngine;
+using Zenject;
 using Random = UnityEngine.Random;
 
 namespace Gameplay.Enemies
@@ -10,19 +11,30 @@ namespace Gameplay.Enemies
 	{
 		public event EventHandler<float> CausedDamageToTarget;
 		public event EventHandler<int> KillsCountChanged;
+		public Transform Target { get => _target; set => _target = value; }
+		public Transform EnemiesParent { get => _enemiesParent; set => _enemiesParent = value; }
+
+		private PropsManager _propsManager;
 
 		[SerializeField] private EnemyManagerScriptableObject _data;
-		[SerializeField] private PropsManager _propsManager;
-		[SerializeField] private Transform _target;
 		[SerializeField] private Enemy[] _enemyPrefabs;
-		[SerializeField] private Transform _enemiesParent;
 		[SerializeField] private float _spawnRadius;
 		[SerializeField] private float _maxDropDist = 1f;
+		
+		private Transform _target;
+		private Transform _enemiesParent;
 
 		private float _currentSpawnInterval;
 		private float _spawnElapsedTime;
 		private float _spawnDecreaseElapsedTime;
 		private int _killsCount;
+
+
+		[Inject]
+		private void Construct(PropsManager propsManager)
+		{
+			_propsManager = propsManager;
+		}
 
 		private void Awake()
 		{
@@ -131,16 +143,17 @@ namespace Gameplay.Enemies
 				 _data.MinSpawnIntervalSec : _currentSpawnInterval;
 		}
 
-		private void OnDrawGizmos()
-		{
-			Gizmos.color = Color.yellow;
-			Gizmos.DrawWireSphere(_target.position, _spawnRadius);
-		}
-
 		private Enemy CreateRandomEnemy()
 		{
 			var prefab = _enemyPrefabs[Random.Range(0, _enemyPrefabs.Length)];
 			return Instantiate(prefab, _enemiesParent);
+		}
+		private void OnDrawGizmos()
+		{
+			if (_target == null) return;
+
+			Gizmos.color = Color.yellow;
+			Gizmos.DrawWireSphere(_target.position, _spawnRadius);
 		}
 	}
 }

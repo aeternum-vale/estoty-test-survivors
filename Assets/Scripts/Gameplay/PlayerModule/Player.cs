@@ -3,70 +3,42 @@ using ScriptableObjects;
 using System;
 using Gameplay.Props;
 using Gameplay.Enemies;
+using Zenject;
 
 namespace Gameplay.PlayerModule
 {
 	public class Player : MonoBehaviour
 	{
-		public IInputSource InputSource { get; set; }
-
 		public event EventHandler Died;
 		public event EventHandler<float> NormalizedHealthChanged;
 		public event EventHandler<float> NormalizedExperienceChanged;
 		public event EventHandler<int> LevelChanged;
 
+		private IInputSource _inputSource;
+		private EnemiesManager _enemiesManager;
 		[SerializeField] private PlayerScriptableObject _data;
-		[SerializeField] private EnemiesManager _enemiesManager;
 		[SerializeField] private Gun _gun;
-		[SerializeField] private float _shootingRadius;
 
 		private float _health;
-		private float Health
-		{
-			get => _health;
-			set
-			{
-				var old = _health;
-				_health = Math.Clamp(value, 0, _data.TotalHealth);
-				if (old != _health)
-					NormalizedHealthChanged?.Invoke(this, _health / _data.TotalHealth);
-			}
-		}
-
+		private float Health { get => _health; set => SetHealth(value); }
 		private float _experience;
-		public float Experience
+		public float Experience { get => _experience; set => SetExperience(value); }
+		private int _level;
+		private int Level { get => _level; set => SetLevel(value); }
+		public Gun Gun { get => _gun; set => _gun = value; }
+
+		[Inject]
+		private void Construct(IInputSource inputSource, EnemiesManager enemiesManager, PropsManager propsManager)
 		{
-			get => _experience;
-			set
-			{
-				var old = _experience;
-				_experience = value;
+			_inputSource = inputSource;
+			_enemiesManager = enemiesManager;
 
-				if (_experience >= _data.ExperienceAmountOfOneLevel)
-				{
-					Level++;
-					_gun.DecreaseShootingInterval();
-					_experience %= _data.ExperienceAmountOfOneLevel;
-				}
-
-				if (old != _experience)
-					NormalizedExperienceChanged?.Invoke(this, _experience / _data.ExperienceAmountOfOneLevel);
-			}
+			propsManager.AttractionTarget = transform;
 		}
 
-		
-		private int _level;
-		private int Level
+		private void Awake()
 		{
-			get => _level; 
-			set
-			{
-				if (_level != value)
-				{
-					_level = value;
-					LevelChanged?.Invoke(this, _level);
-				}
-			}
+			_enemiesManager.Target = transform;
 		}
 
 		private void Start()
@@ -74,6 +46,10 @@ namespace Gameplay.PlayerModule
 			Health = _data.TotalHealth;
 			Experience = 0f;
 			Level = 0;
+
+			NormalizedHealthChanged?.Invoke(this, 1f);
+			NormalizedExperienceChanged?.Invoke(this, 0f);
+			LevelChanged?.Invoke(this, 0);
 
 			_enemiesManager.CausedDamageToTarget += OnDamageMade;
 		}
@@ -87,11 +63,11 @@ namespace Gameplay.PlayerModule
 
 		void Update()
 		{
-			transform.position += _data.Speed * Time.deltaTime * (Vector3)InputSource.MovementDelta;
+			transform.position += _data.Speed * Time.deltaTime * (Vector3)_inputSource.MovementDelta;
 
 			_enemiesManager.GetEnemyClosestToPlayer(out var closestEnemy, out var distance);
 
-			bool hasTarget = (closestEnemy != null) && (distance <= _shootingRadius);
+			bool hasTarget = (closestEnemy != null) && (distance <= _data.ShootingRadius);
 			_gun.ClosestEnemy = hasTarget ? closestEnemy.transform : null;
 		}
 
@@ -120,10 +96,48 @@ namespace Gameplay.PlayerModule
 			}
 		}
 
+		private void SetExperience(float value)
+		{
+			var old = _experience;
+			_experience = value;
+
+			if (_experience >= _data.ExperienceAmountOfOneLevel)
+			{
+				Level++;
+				_gun.DecreaseShootingInterval();
+				_experience %= _data.ExperienceAmountOfOneLevel;
+			}
+
+			if (old != _experience)
+				NormalizedExperienceChanged?.Invoke(this, _experience / _data.ExperienceAmountOfOneLevel);
+		}
+
+		private void SetHealth(float value)
+		{
+			var old = _health;
+			_health = Math.Clamp(value, 0, _data.TotalHealth);
+			if (old != _health)
+				NormalizedHealthChanged?.Invoke(this, _health / _data.TotalHealth);
+		}
+
+		private void SetLevel(int value)
+		{
+			if (_level != value)
+			{
+				_level = value;
+				LevelChanged?.Invoke(this, _level);
+			}
+		}
+
+		private void OnDestroy()
+		{
+			_enemiesManager.CausedDamageToTarget -= OnDamageMade;
+		}
+
 		private void OnDrawGizmos()
 		{
 			Gizmos.color = Color.red;
-			Gizmos.DrawWireSphere(transform.position, _shootingRadius);
+			Gizmos.DrawWireSphere(transform.position, _data.ShootingRadius);
 		}
 	}
 }

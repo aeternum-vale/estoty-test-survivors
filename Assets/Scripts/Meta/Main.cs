@@ -14,11 +14,11 @@ namespace Meta
 		[SerializeField] private UIManager _uiManager;
 
 		
-		private void Awake()
-		{
-			_player.InputSource = _joystick;
-			_presenter.View = _uiManager;
-		}
+		// private void Awake()
+		// {
+		// 	_player._inputSource = _joystick;
+		// 	_presenter.View = _uiManager;
+		// }
 
 		private void Start()
 		{

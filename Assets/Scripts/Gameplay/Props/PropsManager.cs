@@ -8,9 +8,13 @@ namespace Gameplay.Props
 {
 	public class PropsManager : MonoBehaviour
 	{
+		public Transform AttractionTarget { get => _attractionTarget; set => _attractionTarget = value; }
+		public Transform PropsParent { get => _propsParent; set => _propsParent = value; }
+
 		[SerializeField] private Prop[] _propPrefabs;
-		[SerializeField] private Transform _propsParent;
-		[SerializeField] private Transform _attractionTarget;
+
+		private Transform _propsParent;
+		private Transform _attractionTarget;
 		[SerializeField] private GeneralPropsScriptableObject _data;
 		private Dictionary<PropType, Prop> _propPrefabsDictionary;
 

@@ -4,7 +4,9 @@ namespace Gameplay
 {
 	public class CameraFollower : MonoBehaviour
 	{
-		[SerializeField] private Transform _target;
+		public Transform Target { get => _target; set => _target = value; }
+		private Transform _target;
+
 
 		private void LateUpdate()
 		{
